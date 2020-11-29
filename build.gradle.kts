@@ -2,7 +2,7 @@ plugins {
     java
 }
 
-group = "com.github.leroyguillaume"
+group = "com.teezmedia"
 version = "1.5.0"
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 dependencies {
     val bcryptVersion = "0.9.0"
     val jbossLoggingVersion = "3.4.1.Final"
-    val keycloakVersion = "10.0.1"
+    val keycloakVersion = "11.0.3"
 
     // BCrypt
     implementation("at.favre.lib:bcrypt:$bcryptVersion")

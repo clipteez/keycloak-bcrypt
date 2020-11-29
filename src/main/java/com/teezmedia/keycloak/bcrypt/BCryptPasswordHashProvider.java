@@ -1,4 +1,4 @@
-package com.github.leroyguillaume.keycloak.bcrypt;
+package com.teezmedia.keycloak.bcrypt;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.keycloak.credential.hash.PasswordHashProvider;
@@ -7,6 +7,7 @@ import org.keycloak.models.credential.PasswordCredentialModel;
 
 /**
  * @author <a href="mailto:pro.guillaume.leroy@gmail.com">Guillaume Leroy</a>
+ * @author <a href="mailto:holly@teez-media.com">Holly Schöne</a>
  */
 public class BCryptPasswordHashProvider implements PasswordHashProvider {
     private final int defaultIterations;
@@ -19,10 +20,7 @@ public class BCryptPasswordHashProvider implements PasswordHashProvider {
 
     @Override
     public boolean policyCheck(PasswordPolicy policy, PasswordCredentialModel credential) {
-        int policyHashIterations = policy.getHashIterations();
-        if (policyHashIterations == -1) {
-            policyHashIterations = defaultIterations;
-        }
+        int policyHashIterations = consolidateCost(policy.getHashIterations());
 
         return credential.getPasswordCredentialData().getHashIterations() == policyHashIterations
                 && providerId.equals(credential.getPasswordCredentialData().getAlgorithm());
@@ -30,21 +28,20 @@ public class BCryptPasswordHashProvider implements PasswordHashProvider {
 
     @Override
     public PasswordCredentialModel encodedCredential(String rawPassword, int iterations) {
-        String encodedPassword = encode(rawPassword, iterations);
+        int cost = consolidateCost(iterations);
+        String encodedPassword = encode(rawPassword, cost);
 
         // bcrypt salt is stored as part of the encoded password so no need to store salt separately
-        return PasswordCredentialModel.createFromValues(providerId, new byte[0], iterations, encodedPassword);
+        return PasswordCredentialModel.createFromValues(providerId, new byte[0], cost, encodedPassword);
     }
 
     @Override
     public String encode(String rawPassword, int iterations) {
-        int cost;
-        if (iterations == -1) {
-            cost = defaultIterations;
-        } else {
-            cost = iterations;
-        }
-        return BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(cost, rawPassword.toCharArray());
+        return BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(consolidateCost(iterations), rawPassword.toCharArray());
+    }
+
+    private int consolidateCost(int iterations) {
+        return iterations < BCrypt.MIN_COST || iterations > BCrypt.MAX_COST ? defaultIterations : iterations;
     }
 
     @Override

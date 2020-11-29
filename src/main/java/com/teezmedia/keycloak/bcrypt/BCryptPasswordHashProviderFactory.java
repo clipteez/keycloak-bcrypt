@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package com.github.leroyguillaume.keycloak.bcrypt;
+package com.teezmedia.keycloak.bcrypt;
 
 import org.keycloak.Config;
 import org.keycloak.credential.hash.PasswordHashProvider;
 import org.keycloak.credential.hash.PasswordHashProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.provider.ProviderFactory;
 
 /**
  * @author <a href="mailto:pro.guillaume.leroy@gmail.com">Guillaume Leroy</a>
+ * @author <a href="mailto:holly@teez-media.com">Holly Schöne</a>
  */
 public class BCryptPasswordHashProviderFactory implements PasswordHashProviderFactory {
-    public static final String ID = "bcrypt";
+    public static final String ID = "bcrypt-2Y";
     public static final int DEFAULT_ITERATIONS = 10;
 
     @Override
